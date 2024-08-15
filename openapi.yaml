@@ -1,0 +1,102 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+  description: Tuniu product search API
+servers:
+  - url: https://api-p.tuniu.com/aibas
+tags:
+  - name: product
+    description: Tuniu product search API
+paths:
+  /product/search:
+    post:
+      tags:
+        - product
+      summary: Find a travel product.
+      description: Get the travel product info of name, price, photo and url
+      operationId: search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSearchParam'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSearchResult'
+      security:
+        - Authorization: []
+components:
+  schemas:
+    ProductSearchParam:
+      required:
+        - keyword
+      type: object
+      properties:
+        keyword:
+          type: string
+          description: 旅游产品搜索关键字，可以是城市，目的地，景点，门票等
+        lowestPrice:
+          type: integer
+          format: int32
+        highestPrice:
+          type: integer
+          format: int32
+        departsDateBegin:
+          type: string
+          description: The format of the field should be yyyy-MM-dd
+        departsDateEnd:
+          type: string
+          description: The format of the field should be yyyy-MM-dd
+    ProductData:
+      required:
+        - picUrl
+        - price
+        - productName
+        - productUrl
+        - recommendWords
+      type: object
+      properties:
+        productUrl:
+          type: string
+          description: 产品URL地址
+        productName:
+          type: string
+          description: 产品名称
+        picUrl:
+          type: string
+          description: 图片URL
+        price:
+          type: string
+          description: 价格
+        recommendWords:
+          type: string
+          description: 推荐语
+      description: 数据内容
+    ProductSearchResult:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 接口处理成功标记
+        data:
+          type: array
+          description: 数据内容
+          items:
+            $ref: '#/components/schemas/ProductData'
+        message:
+          type: string
+          description: 消息
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+      scheme: bearer
